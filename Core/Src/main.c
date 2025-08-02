@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 #include<stdio.h>
+#include "mpu6050.h"
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
@@ -32,9 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MPU6050_ADDR (0x68<<1)
-#define PWR_MGMT_1 0x6B
-#define WHO_AM_I 0x75
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -62,7 +61,12 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-	//Use printf with UART
+
+MPU6050_t mpu;
+MPU6050_Data_t sensor_data;
+
+
+//Use printf with UART
 int _write(int fd, char *ptr, int len) {
 
     if (fd == 1) {
@@ -79,24 +83,6 @@ int _write(int fd, char *ptr, int len) {
         return len;
     }
     return -1;
-}
-
-void MPU6050_Init(){
-	//Wake up MCU by setting the sleep bit to 0
-	  uint8_t pwrdata = 0x00;
-	  HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, PWR_MGMT_1, 1, &pwrdata, 1, HAL_MAX_DELAY);
-
-
-	  //Verify if the MPU6050 is working by reading the WHO_AM_I register
-	  uint8_t who_am_i = 0;
-	  HAL_I2C_Mem_Read(&hi2c1,MPU6050_ADDR, WHO_AM_I, 1, &who_am_i, 1, HAL_MAX_DELAY);
-
-	  if(who_am_i == 0x68){
-		  printf("MPU6050 Connected successfully \n");
-	  }
-	  else{
-		  printf("MPU6050 couldn't connect\n");
-	  }
 }
 
 /* USER CODE END 0 */
@@ -133,17 +119,33 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  // Initialize MPU6050
+  if (MPU6050_Init(&mpu, &hi2c1) != HAL_OK) {
+          printf("MPU6050 init failed!\n");
+          Error_Handler();
+      }
 
-  MPU6050_Init();
-
-
+      if (MPU6050_Config(&mpu, MPU6050_GYRO_1000, MPU6050_ACCEL_4G) != HAL_OK) {
+          printf("MPU6050 config failed!\n");
+          Error_Handler();
+      }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if (MPU6050_ReadData(&mpu, &sensor_data) == HAL_OK) {
+	              printf("RAW Accel: %d %d %d\n", sensor_data.ax, sensor_data.ay, sensor_data.az);
+	              printf("RAW Gyro : %d %d %d\n", sensor_data.gx, sensor_data.gy, sensor_data.gz);
+	              printf("Accel: %.2f %.2f %.2f g\n", sensor_data.ax_g, sensor_data.ay_g, sensor_data.az_g);
+	              printf("Gyro : %.2f %.2f %.2f dps\n", sensor_data.gx_dps, sensor_data.gy_dps, sensor_data.gz_dps);
+	              printf("Temp : %.2f degC\n\n", sensor_data.temp_deg);
+	          } else {
+	              printf("MPU6050 read failed\n");
+	          }
 
+	          HAL_Delay(1000);
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }

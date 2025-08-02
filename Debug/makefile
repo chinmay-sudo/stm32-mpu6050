@@ -61,7 +61,7 @@ main-build: 02_MPU6050_wakeup.elf secondary-outputs
 
 # Tool invocations
 02_MPU6050_wakeup.elf 02_MPU6050_wakeup.map: $(OBJS) $(USER_OBJS) C:\Users\Chinmay\ Benni\Documents\Microcontrollers\STM32\Balancing_bot\02_MPU6050_wakeup\STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "02_MPU6050_wakeup.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Chinmay Benni\Documents\Microcontrollers\STM32\Balancing_bot\02_MPU6050_wakeup\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="02_MPU6050_wakeup.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "02_MPU6050_wakeup.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Chinmay Benni\Documents\Microcontrollers\STM32\Balancing_bot\02_MPU6050_wakeup\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="02_MPU6050_wakeup.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
