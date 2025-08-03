@@ -1,5 +1,5 @@
 #include "mpu6050.h"
-
+#include <math.h>
 HAL_StatusTypeDef MPU6050_Init(MPU6050_t *mpu, I2C_HandleTypeDef *hi2c) {
     mpu->hi2c = hi2c;
 
@@ -72,6 +72,7 @@ HAL_StatusTypeDef MPU6050_ReadData(MPU6050_t *mpu, MPU6050_Data_t *data) {
     // Formatted data
     data->ax_g = data->ax / mpu->accel_sensitivity;
     data->ay_g = data->ay / mpu->accel_sensitivity;
+    data->az_g = data->az / mpu->accel_sensitivity;
     data->temp_deg = (data->temp_raw / 340.0f) + 36.53f;
     data->gx_dps = data->gx / mpu->gyro_sensitivity;
     data->gy_dps = data->gy / mpu->gyro_sensitivity;
@@ -79,3 +80,23 @@ HAL_StatusTypeDef MPU6050_ReadData(MPU6050_t *mpu, MPU6050_Data_t *data) {
 
     return HAL_OK;
 }
+
+
+// Calculate Pitch and Roll
+float radians_to_degrees(float rad) {
+    return rad * (180.0f / M_PI);
+}
+void calculate_pitch_roll(float ax, float ay, float az, float* pitch, float* roll) {
+    *roll  = radians_to_degrees(atan2f(ay, az));
+    *pitch = radians_to_degrees(atan2f(-ax, sqrtf(ay * ay + az * az)));
+}
+
+
+
+
+
+
+
+
+
+

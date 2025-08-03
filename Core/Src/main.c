@@ -136,16 +136,21 @@ int main(void)
   while (1)
   {
 	  if (MPU6050_ReadData(&mpu, &sensor_data) == HAL_OK) {
-	              printf("RAW Accel: %d %d %d\n", sensor_data.ax, sensor_data.ay, sensor_data.az);
-	              printf("RAW Gyro : %d %d %d\n", sensor_data.gx, sensor_data.gy, sensor_data.gz);
-	              printf("Accel: %.2f %.2f %.2f g\n", sensor_data.ax_g, sensor_data.ay_g, sensor_data.az_g);
-	              printf("Gyro : %.2f %.2f %.2f dps\n", sensor_data.gx_dps, sensor_data.gy_dps, sensor_data.gz_dps);
-	              printf("Temp : %.2f degC\n\n", sensor_data.temp_deg);
-	          } else {
-	              printf("MPU6050 read failed\n");
-	          }
+		//printf("RAW Accel: %d %d %d\n", sensor_data.ax, sensor_data.ay, sensor_data.az);
 
-	          HAL_Delay(1000);
+		//printf("%.2f\t%.2f\t%.2f\n", sensor_data.ax_g, sensor_data.ay_g, sensor_data.az_g);
+		/*printf("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\n",
+		         sensor_data.ax_g, sensor_data.ay_g, sensor_data.az_g,
+		         sensor_data.gx_dps, sensor_data.gy_dps, sensor_data.gz_dps);
+	 	 */
+		  float pitch, roll;
+		  calculate_pitch_roll(sensor_data.ax_g, sensor_data.ay_g, sensor_data.az_g, &pitch, &roll);
+		  printf("Pitch: %.2f deg\tRoll: %.2f deg\n", pitch, roll);
+  } else {
+	  printf("MPU6050 read failed\n");
+  }
+
+  HAL_Delay(1000);
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }

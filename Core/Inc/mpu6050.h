@@ -3,7 +3,7 @@
 
 //Includes
 #include "stm32f4xx_hal.h"
-
+#include <math.h>
 // MPU6050 Register Addresses
 #define MPU6050_ADDR     (0x68 << 1)
 #define WHO_AM_I         0x75
@@ -51,4 +51,6 @@ HAL_StatusTypeDef MPU6050_Init(MPU6050_t *mpu, I2C_HandleTypeDef *hi2c);
 HAL_StatusTypeDef MPU6050_Config(MPU6050_t *mpu,uint8_t gyro_range,uint8_t accel_range);
 HAL_StatusTypeDef MPU6050_SetConfig(MPU6050_t *mpu, uint8_t ext_sync, uint8_t dlpf_level);
 HAL_StatusTypeDef MPU6050_ReadData(MPU6050_t *mpu, MPU6050_Data_t *data);
+float radians_to_degrees(float rad);
+void calculate_pitch_roll(float ax, float ay, float az, float* pitch, float* roll);
 #endif
